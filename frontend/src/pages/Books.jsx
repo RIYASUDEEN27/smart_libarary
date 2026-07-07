@@ -26,7 +26,7 @@ const Books = () => {
     book_id: '',
     book_name: '',
     author: '',
-    category: CATEGORIES[0],
+    category: '',
     publisher: '',
     edition: '',
     total_copies: 1,
@@ -97,7 +97,7 @@ const Books = () => {
     setEditMode(false);
     setCurrentBook(null);
     setFormData({
-      book_id: '', book_name: '', author: '', category: CATEGORIES[0],
+      book_id: '', book_name: '', author: '', category: '',
       publisher: '', edition: '', total_copies: 1, available_copies: 1
     });
     setIsModalOpen(true);
@@ -303,9 +303,7 @@ const Books = () => {
 
                 <div className="col-span-1">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
-                  <select name="category" value={formData.category} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm py-2 px-3 border">
-                    {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
+                  <input type="text" name="category" value={formData.category} onChange={handleInputChange} placeholder="e.g. Programming" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm py-2 px-3 border" />
                 </div>
 
                 <div className="col-span-1">
