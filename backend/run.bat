@@ -1,0 +1,13 @@
+@echo off
+echo Setting up virtual environment...
+if not exist "venv" (
+    echo Creating virtual environment...
+    python -m venv venv
+)
+call venv\Scripts\activate.bat
+
+echo Installing requirements...
+pip install -r requirements.txt
+
+echo Starting the backend server...
+python -m uvicorn app.main:app --reload
