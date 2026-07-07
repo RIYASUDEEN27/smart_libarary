@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import List, Optional
 from app.models.book import BookCreate, BookUpdate, BookInDB
 from app.models.user import UserInDB
-from app.routes.auth import get_current_admin
+from app.routes.auth import get_current_admin, get_current_user
 from app.database import db
 from datetime import datetime
 from bson import ObjectId
@@ -33,7 +33,7 @@ async def get_books(
     return books
 
 @router.post("/", response_model=BookInDB)
-async def create_book(book: BookCreate, admin: UserInDB = Depends(get_current_admin)):
+async def create_book(book: BookCreate, current_user: UserInDB = Depends(get_current_user)):
     clean_book = {k: v for k, v in book.dict().items() if v != ""}
     book_with_defaults = BookCreate(**clean_book)
     new_book = book_with_defaults.dict()
@@ -53,7 +53,7 @@ async def get_book(id: str):
     return book
 
 @router.put("/{id}", response_model=BookInDB)
-async def update_book(id: str, book_update: BookUpdate, admin: UserInDB = Depends(get_current_admin)):
+async def update_book(id: str, book_update: BookUpdate, current_user: UserInDB = Depends(get_current_user)):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=400, detail="Invalid ID")
     
@@ -83,7 +83,7 @@ async def update_book(id: str, book_update: BookUpdate, admin: UserInDB = Depend
     return updated_book
 
 @router.delete("/{id}")
-async def delete_book(id: str, admin: UserInDB = Depends(get_current_admin)):
+async def delete_book(id: str, current_user: UserInDB = Depends(get_current_user)):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=400, detail="Invalid ID")
     result = await db.db["books"].delete_one({"_id": ObjectId(id)})
