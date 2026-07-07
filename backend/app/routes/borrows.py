@@ -176,7 +176,6 @@ async def get_user_history(current_user: UserInDB = Depends(get_current_user)):
         result.append({
             "id": str(record["_id"]),
             "book_name": record["book_details"]["book_name"],
-            "image": record["book_details"]["image"],
             "borrow_date": record["borrow_date"],
             "due_date": record["due_date"],
             "return_date": record["return_date"],

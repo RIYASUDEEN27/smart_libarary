@@ -115,12 +115,7 @@ const BorrowBooks = () => {
           {books.map((book) => (
             <div key={book._id} className="card overflow-hidden hover:shadow-md transition-shadow duration-200">
               <div className="h-40 bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 flex items-center justify-center overflow-hidden">
-                {book.image ? (
-                  <img src={book.image} alt={book.book_name} className="w-full h-full object-cover"
-                    onError={(e) => { e.target.style.display = 'none'; }} />
-                ) : (
-                  <BookCopy className="h-16 w-16 text-primary-300" />
-                )}
+                <BookCopy className="h-16 w-16 text-primary-300" />
               </div>
               <div className="p-4">
                 <span className="badge-blue text-xs mb-2">{book.category}</span>

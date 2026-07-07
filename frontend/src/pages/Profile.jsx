@@ -72,11 +72,7 @@ const Profile = () => {
             <li key={record.id} className="p-6 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50">
               <div className="flex items-center space-x-4">
                 <div className="h-16 w-12 bg-gray-200 dark:bg-gray-700 rounded overflow-hidden">
-                  {record.image ? (
-                    <img src={record.image} alt={record.book_name} className="h-full w-full object-cover" />
-                  ) : (
-                    <Book className="h-full w-full p-2 text-gray-400" />
-                  )}
+                  <Book className="h-full w-full p-2 text-gray-400" />
                 </div>
                 <div>
                   <h4 className="text-sm font-bold text-gray-900 dark:text-white">{record.book_name}</h4>

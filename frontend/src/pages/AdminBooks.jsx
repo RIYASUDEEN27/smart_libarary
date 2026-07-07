@@ -9,7 +9,7 @@ const CATEGORIES = [
 ];
 
 const emptyForm = {
-  book_name: '', author: '', book_id: '', category: CATEGORIES[0],
+  book_name: '', author: '', book_id: '', category: '',
   publisher: '', edition: '', total_copies: 1, available_copies: 1,
 };
 
@@ -82,9 +82,8 @@ const BookFormModal = ({ editMode, formData, setFormData, onSubmit, onClose, sav
             </div>
             <div>
               <label className="form-label">Category</label>
-              <select name="category" value={formData.category} onChange={handleChange} className="form-input">
-                {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
+              <input name="category" value={formData.category} onChange={handleChange}
+                className="form-input" placeholder="e.g. Programming" />
             </div>
 
             <div>
