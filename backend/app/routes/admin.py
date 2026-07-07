@@ -102,6 +102,27 @@ async def get_all_users(admin: UserInDB = Depends(get_current_admin)):
         u["_id"] = str(u["_id"])
     return users
 
+from app.models.user import UserCreate
+from app.core.security import get_password_hash
+
+@router.post("/users")
+async def create_user(user: UserCreate, admin: UserInDB = Depends(get_current_admin)):
+    existing = await db.db["users"].find_one({"email": user.email})
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    hashed_password = get_password_hash(user.password if user.password else "password123")
+    new_user = {
+        "name": user.name,
+        "email": user.email,
+        "password": hashed_password,
+        "role": user.role if user.role else "student",
+        "created_at": datetime.utcnow()
+    }
+    result = await db.db["users"].insert_one(new_user)
+    new_user["_id"] = str(result.inserted_id)
+    return {"message": "User created successfully", "id": new_user["_id"]}
+
 @router.delete("/users/{user_id}")
 async def delete_user(user_id: str, admin: UserInDB = Depends(get_current_admin)):
     if not ObjectId.is_valid(user_id):

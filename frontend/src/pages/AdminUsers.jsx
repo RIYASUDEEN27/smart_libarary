@@ -1,6 +1,50 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
-import { Users, Search, Trash2, BookOpen, Shield } from 'lucide-react';
+import { Users, Search, Trash2, BookOpen, Shield, Plus, X } from 'lucide-react';
+
+const UserFormModal = ({ formData, setFormData, onSubmit, onClose, saving }) => {
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  return (
+    <div className="modal-overlay">
+      <div className="modal-container max-w-md">
+        <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-gray-700">
+          <h2 className="section-title">Add New User</h2>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+            <X className="h-5 w-5 text-gray-500" />
+          </button>
+        </div>
+        <div className="p-5">
+          <form id="userForm" onSubmit={onSubmit} className="space-y-4">
+            <div>
+              <label className="form-label">Name *</label>
+              <input required name="name" value={formData.name} onChange={handleChange} className="form-input" placeholder="e.g. John Doe" />
+            </div>
+            <div>
+              <label className="form-label">Email *</label>
+              <input required type="email" name="email" value={formData.email} onChange={handleChange} className="form-input" placeholder="e.g. john@example.com" />
+            </div>
+            <div>
+              <label className="form-label">Role</label>
+              <select name="role" value={formData.role} onChange={handleChange} className="form-input">
+                <option value="student">Student</option>
+                <option value="faculty">Faculty</option>
+                <option value="admin">Admin</option>
+                <option value="user">User</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div className="p-5 border-t border-gray-100 dark:border-gray-700 flex justify-end gap-3">
+          <button type="button" onClick={onClose} className="btn-secondary">Cancel</button>
+          <button type="submit" form="userForm" disabled={saving} className="btn-primary bg-blue-600 hover:bg-blue-700">
+            {saving ? 'Saving...' : 'Add User'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
@@ -9,6 +53,9 @@ const AdminUsers = () => {
   const [search, setSearch] = useState('');
   const [toast, setToast] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [formData, setFormData] = useState({ name: '', email: '', role: 'student' });
+  const [saving, setSaving] = useState(false);
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type });
@@ -32,6 +79,21 @@ const AdminUsers = () => {
   }, []);
 
   useEffect(() => { fetchData(); }, [fetchData]);
+
+  const handleAddSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await api.post('/admin/users', { ...formData, password: 'password123' });
+      showToast('User added successfully (Password: password123)');
+      setIsFormOpen(false);
+      fetchData();
+    } catch (err) {
+      showToast(err.response?.data?.detail || 'Failed to add user', 'error');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleDelete = async (id, name) => {
     if (!window.confirm(`Delete user "${name}"? This cannot be undone.`)) return;
@@ -61,13 +123,17 @@ const AdminUsers = () => {
         </div>
       )}
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h1 className="page-title">Manage Users</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             {users.length} registered member{users.length !== 1 ? 's' : ''}
           </p>
         </div>
+        <button onClick={() => { setFormData({ name: '', email: '', role: 'student' }); setIsFormOpen(true); }} className="btn-primary bg-blue-600 hover:bg-blue-700 whitespace-nowrap">
+          <Plus className="h-4 w-4" />
+          Add User
+        </button>
       </div>
 
       {/* Summary */}
@@ -215,6 +281,16 @@ const AdminUsers = () => {
             </table>
           </div>
         </div>
+      )}
+
+      {isFormOpen && (
+        <UserFormModal
+          formData={formData}
+          setFormData={setFormData}
+          onSubmit={handleAddSubmit}
+          onClose={() => setIsFormOpen(false)}
+          saving={saving}
+        />
       )}
     </div>
   );
