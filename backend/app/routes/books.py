@@ -57,7 +57,18 @@ async def update_book(id: str, book_update: BookUpdate, admin: UserInDB = Depend
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=400, detail="Invalid ID")
     
-    update_data = {k: v for k, v in book_update.dict().items() if v is not None}
+    update_dict = book_update.dict(exclude_unset=True)
+    update_data = {}
+    for k, v in update_dict.items():
+        if v is not None:
+            if v == "":
+                if k == "author": v = "Unknown"
+                elif k == "book_id": v = "AUTO_GENERATED"
+                elif k == "category": v = "Programming"
+                elif k == "publisher": v = "Unknown"
+                elif k == "edition": v = "1st Edition"
+            update_data[k] = v
+
     if not update_data:
         raise HTTPException(status_code=400, detail="No data provided for update")
         
